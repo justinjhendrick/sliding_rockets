@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
-	
 	<meta title="SlidingRockets" package="com.sample.slidingrockets" version="1.0.0" company="Company Name" />
 	<app main="Main" path="Export" file="SlidingRockets" />
-	
 	<source path="Source" />
-	
 	<haxelib name="openfl" />
-	
+	<haxelib name="box2d" />
 	<assets path="Assets" rename="assets" />
-	
 </project>
