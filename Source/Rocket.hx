@@ -11,21 +11,25 @@ import box2D.collision.shapes.B2PolygonShape;
 class Rocket extends Sprite {
 
     public var body : B2Body;
-    public var fixture : B2Fixture;
 
     var needRedraw = false;
     var color = 0xff0000;
-    var widthPx = 50;
-    var heightPx = 100;
 
     var widthM = 1.0;
     var heightM = 2.0;
+
+    var widthPx : Int;
+    var heightPx : Int;
 	
 	public function new(world : B2World) {
 		super();
         createBody(world);
+
+        onResize(null);
         draw();
+
         this.addEventListener(Event.ENTER_FRAME, everyFrame);
+        this.addEventListener(Event.RESIZE, onResize);
     }
 
     function createBody(world : B2World) {
@@ -44,15 +48,26 @@ class Rocket extends Sprite {
         triangleVertices.push(new B2Vec2(widthM, heightM));
         shape.setAsVector(triangleVertices);
 
-        fixture = this.body.createFixture2(shape);
+        this.body.createFixture2(shape);
 	}
 
     function everyFrame(e : Event) {
+        var p = World.metersToPixels(
+                this.body.getPosition().x,
+                this.body.getPosition().y);
+        this.x = p.x;
+        this.y = p.y;
+
         if (needRedraw) {
             this.graphics.clear();
             this.draw();
         }
-        computePixelCoords();
+    }
+
+    function onResize(e : Event) {
+        var p = World.metersToPixels(this.widthM, this.heightM);
+        this.widthPx = p.x;
+        this.heightPx = p.y;
     }
 
     function draw() {
@@ -64,12 +79,5 @@ class Rocket extends Sprite {
             new Point(0, heightPx)
         );
         this.graphics.endFill();
-    }
-
-    function computePixelCoords() {
-        // TODO scale to screen
-        trace('x = $x, y = $y');
-        this.x = this.body.getPosition().x;
-        this.y = this.body.getPosition().y;
     }
 }

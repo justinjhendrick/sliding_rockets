@@ -4,6 +4,8 @@ import openfl.Vector;
 import openfl.display.Graphics;
 import openfl.geom.Point;
 
+typedef IntPoint = {x: Int, y :Int};
+
 class Util {
     public static function drawTriangle(
             g : Graphics,

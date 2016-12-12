@@ -14,7 +14,6 @@ class Main extends Sprite {
 
     public function addChildren(displayObjects : Array<DisplayObject>) {
         for (dispObj in displayObjects) {
-            trace('$dispObj');
             this.addChild(dispObj);
         }
     }
