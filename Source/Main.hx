@@ -1,12 +1,21 @@
 package;
 
 import openfl.display.Sprite;
+import openfl.display.DisplayObject;
 
 class Main extends Sprite {
+    var world : World;
 	
 	public function new() {
 		super();
-        var rocket = new Rocket();
-        this.addChild(rocket);
+        world = new World();
+        this.addChildren(world.getDisplayObjects());
 	}
+
+    public function addChildren(displayObjects : Array<DisplayObject>) {
+        for (dispObj in displayObjects) {
+            trace('$dispObj');
+            this.addChild(dispObj);
+        }
+    }
 }
