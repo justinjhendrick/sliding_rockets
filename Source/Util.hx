@@ -21,4 +21,24 @@ class Util {
         v[5] = p3.y;
         g.drawTriangles(v);
     }
+
+    public static function drawRectangle(
+            g : Graphics,
+            color : Int,
+            w : Int,
+            h : Int) {
+        drawRectangleWithOffset(g, color, 0, 0, w, h);
+    }
+
+    public static function drawRectangleWithOffset(
+            g : Graphics,
+            color : Int,
+            deltaX : Int, // this is not the absolute position
+            deltaY : Int, // rather, relative to g's parent x and y
+            w : Int,
+            h : Int) {
+        g.beginFill(color);
+        g.drawRect(deltaX, deltaY, w, h);
+        g.endFill();
+    }
 }

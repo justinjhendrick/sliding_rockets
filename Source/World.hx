@@ -34,7 +34,7 @@ class World extends B2World {
     }
 
     public function getDisplayObjects() : Array<DisplayObject> {
-        return [rocket];
+        return [cast(rocket, DisplayObject)].concat(track.getDisplayObjects());
     }
 
     function stepWorld() {
