@@ -16,14 +16,16 @@ class Track {
         this.world = _world;
 
         var bodyDef = new B2BodyDef();
-        bodyDef.position = new B2Vec2(0.0, 0.0);
         parentBody = world.createBody(bodyDef);
 
         boundaries = new Array<TrackEdge>();
         var topLeft  = new B2Vec2(0.0,          0.0);
         var topRight = new B2Vec2(World.widthM, 0.0);
-        var botLeft  = new B2Vec2(0.0,          World.heightM);
-        var botRight = new B2Vec2(World.widthM, World.heightM);
+
+        var thicknessM = World.pixelsToMeters(Std.int(TrackEdge.thicknessPx));
+        var botLeft  = new B2Vec2(0.0,          World.heightM - thicknessM);
+        var botRight = new B2Vec2(World.widthM, World.heightM - thicknessM);
+
         boundaries.push(new TrackEdge(parentBody, topLeft, topRight));
         boundaries.push(new TrackEdge(parentBody, topLeft, botLeft));
         boundaries.push(new TrackEdge(parentBody, botLeft, botRight));

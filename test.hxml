@@ -1,0 +1,7 @@
+-cp Tests/
+-cp Source/
+-main TestMain.hx
+-lib lime
+-lib openfl
+-neko test_binary.n
+-cmd neko test_binary.n

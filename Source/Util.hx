@@ -41,4 +41,17 @@ class Util {
         g.drawRect(deltaX, deltaY, w, h);
         g.endFill();
     }
+
+    public static function drawLine(
+            g : Graphics,
+            color : Int,
+            thickness : Float,
+            x1 : Int,
+            y1 : Int,
+            x2 : Int,
+            y2 : Int) {
+        g.lineStyle(thickness, color);
+        g.moveTo(x1, y1);
+        g.lineTo(x2, y2);
+    }
 }

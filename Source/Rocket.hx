@@ -55,6 +55,11 @@ class Rocket extends Sprite {
         var p = World.metersToPixels(
                 this.body.getPosition().x,
                 this.body.getPosition().y);
+
+        //var xM = this.body.getPosition().x;
+        //var yM = this.body.getPosition().y;
+        //trace('$xM, $yM');
+
         this.x = p.x;
         this.y = p.y;
 

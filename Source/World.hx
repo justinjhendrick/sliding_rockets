@@ -16,8 +16,8 @@ class World extends B2World {
     var timeStepMillis : Int;
     var track : Track;
 
-    public static inline var widthM = 10;
-    public static inline var heightM = 10;
+    public static inline var widthM = 10.0;
+    public static inline var heightM = 10.0;
 
     public function new() {
         var gravity = new B2Vec2(0.0, 0.0);
@@ -48,12 +48,23 @@ class World extends B2World {
     public static function metersToPixels(
             horiz : Float,
             vert : Float) : Util.IntPoint {
-        var stageWidthPx = Lib.current.stage.stageWidth;
-        var stageHeightPx = Lib.current.stage.stageHeight;
-        var minDim = Math.min(stageWidthPx, stageHeightPx); // make it square
+        var minDim = getSquareDimensionPx();
 
         var xPx = Std.int(horiz / World.widthM * minDim);
         var yPx = Std.int(vert / World.heightM * minDim);
         return {x : xPx, y : yPx}
+    }
+
+    static function getSquareDimensionPx() {
+        var stageWidthPx = Lib.current.stage.stageWidth;
+        var stageHeightPx = Lib.current.stage.stageHeight;
+        return Math.min(stageWidthPx, stageHeightPx);
+    }
+
+    public static function pixelsToMeters(px : Int) : Float {
+        var minDimPx = getSquareDimensionPx();
+        var minDimM = Math.min(World.widthM, World.heightM);
+
+        return px / minDimPx * minDimM;
     }
 }

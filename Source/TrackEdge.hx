@@ -9,46 +9,43 @@ import box2D.collision.shapes.B2PolygonShape;
 class TrackEdge extends Sprite {
     var physicalShape : B2PolygonShape;
 
-    var widthPx : Int;
-    var heightPx : Int;
+    var parentBody : B2Body;
+    var startPoint : B2Vec2;
+    var endPoint : B2Vec2;
+
+    var startPointPx : Util.IntPoint;
+    var endPointPx : Util.IntPoint;
 
     var color = 0x000000;
+    public static inline var thicknessPx = 10.0;
 
 	public function new(
-            parentBody : B2Body,
-            startPoint : B2Vec2,
-            endPoint : B2Vec2) {
+            _parentBody : B2Body,
+            _startPoint : B2Vec2,
+            _endPoint : B2Vec2) {
         super();
+        this.parentBody = _parentBody;
+        this.startPoint = _startPoint;
+        this.endPoint = _endPoint;
 
-        var p = World.metersToPixels(startPoint.x, startPoint.y);
-        this.x = p.x; this.y = p.y;
-
-        p = World.metersToPixels(
-                endPoint.x - startPoint.x,
-                endPoint.y - startPoint.y);
-        this.widthPx = p.x;
-        this.heightPx = p.y;
-
-        if (this.widthPx < 5) {
-            this.widthPx = 5;
-        }
-        if (this.heightPx < 5) {
-            this.heightPx = 5;
-        }
+        this.startPointPx = World.metersToPixels(startPoint.x, startPoint.y);
+        this.endPointPx = World.metersToPixels(endPoint.x, endPoint.y);
 
         draw();
 
         this.physicalShape = new B2PolygonShape();
-        this.physicalShape.setAsEdge(startPoint, endPoint);
-        parentBody.createFixture2(this.physicalShape);
+        this.physicalShape.setAsEdge(this.startPoint, this.endPoint);
+        this.parentBody.createFixture2(this.physicalShape);
     }
 
     function draw() {
-        Util.drawRectangle(
+        Util.drawLine(
                 this.graphics,
                 this.color,
-                this.widthPx,
-                this.heightPx);
+                TrackEdge.thicknessPx,
+                this.startPointPx.x,
+                this.startPointPx.y,
+                this.endPointPx.x,
+                this.endPointPx.y);
     }
-
 }
