@@ -3,6 +3,7 @@ package;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.geom.Point;
+import openfl.ui.Keyboard;
 
 import box2D.dynamics.*;
 import box2D.common.math.B2Vec2;
@@ -20,6 +21,8 @@ class Rocket extends Sprite {
 
     var widthPx : Int;
     var heightPx : Int;
+    
+    var inputHandler : InputHandler;
 	
 	public function new(world : B2World) {
 		super();
@@ -28,8 +31,11 @@ class Rocket extends Sprite {
         onResize(null);
         draw();
 
-        this.addEventListener(Event.ENTER_FRAME, everyFrame);
-        this.addEventListener(Event.RESIZE, onResize);
+        Main.globalTopLevelSprite
+            .addEventListener(Event.ENTER_FRAME, everyFrame);
+        Main.globalTopLevelSprite
+            .addEventListener(Event.RESIZE, onResize);
+        inputHandler = new InputHandler();
     }
 
     function createBody(world : B2World) {
@@ -52,14 +58,11 @@ class Rocket extends Sprite {
 	}
 
     function everyFrame(e : Event) {
+        getInputAndApplyForces();
+
         var p = World.metersToPixels(
                 this.body.getPosition().x,
                 this.body.getPosition().y);
-
-        //var xM = this.body.getPosition().x;
-        //var yM = this.body.getPosition().y;
-        //trace('$xM, $yM');
-
         this.x = p.x;
         this.y = p.y;
 
@@ -67,6 +70,26 @@ class Rocket extends Sprite {
             this.graphics.clear();
             this.draw();
         }
+    }
+
+    function getInputAndApplyForces() {
+        var magnitude = 0.1;
+        var force : B2Vec2 = new B2Vec2(0.0, 0.0);
+        if (inputHandler.isHeldOrWasDown(Keyboard.UP)) {
+            force.add(new B2Vec2(0.0, -magnitude));
+        }
+        if (inputHandler.isHeldOrWasDown(Keyboard.DOWN)) {
+            force.add(new B2Vec2(0.0, magnitude));
+        }
+        if (inputHandler.isHeldOrWasDown(Keyboard.LEFT)) {
+            force.add(new B2Vec2(-magnitude, 0.0));
+        }
+        if (inputHandler.isHeldOrWasDown(Keyboard.RIGHT)) {
+            force.add(new B2Vec2(magnitude, 0.0));
+        }
+        trace('force = $force');
+        var centerOfMassInWorldCoords = body.getWorldCenter();
+        body.applyForce(force, centerOfMassInWorldCoords);
     }
 
     function onResize(e : Event) {

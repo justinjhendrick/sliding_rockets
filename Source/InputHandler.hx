@@ -3,7 +3,8 @@
 
    This class must:
    1) provide an interface for all objects that want to listen to keyboard and
-   other events.
+   other events. NOTE: the current solution is for each object to have their own
+   InputHandler instance.
        1a) user objects can't interfere with each other. For example:
        user presses key k, object A queries and gets k. if object B queries as
        well, it must also retrieve k.  Each object can act like it is the only
@@ -34,12 +35,13 @@ class InputHandler extends InteractiveObject {
     public function new() {
         super();
         isDown = new Set<KeyCode>();
-
         var noNegatives = true;
         numberOfUnreadDowns = new CounterMap<KeyCode>(noNegatives);
 
-        this.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-        this.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+        Main.globalTopLevelSprite.stage
+            .addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+        Main.globalTopLevelSprite.stage
+            .addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
     }
 
     public function isHeldOrWasDown(k : KeyCode) : Bool {
@@ -52,11 +54,19 @@ class InputHandler extends InteractiveObject {
     }
 
     function onKeyDown(e : KeyboardEvent) {
+        //debug
+        var k = e.keyCode;
+        trace('$k down');
+
         isDown.put(e.keyCode);
         numberOfUnreadDowns.increment(e.keyCode);
     }
 
     function onKeyUp(e : KeyboardEvent) {
+        //debug
+        var k = e.keyCode;
+        trace('$k up');
+
         isDown.remove(e.keyCode);
     }
 }

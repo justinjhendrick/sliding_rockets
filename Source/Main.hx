@@ -5,9 +5,11 @@ import openfl.display.DisplayObject;
 
 class Main extends Sprite {
     var world : World;
+    public static var globalTopLevelSprite;
 	
 	public function new() {
 		super();
+        globalTopLevelSprite = this;
         world = new World();
         this.addChildren(world.getDisplayObjects());
 	}
