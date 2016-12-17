@@ -31,9 +31,9 @@ class Rocket extends Sprite {
         onResize(null);
         draw();
 
-        Main.globalTopLevelSprite
+        Main.globalTopLevelSprite.stage
             .addEventListener(Event.ENTER_FRAME, everyFrame);
-        Main.globalTopLevelSprite
+        Main.globalTopLevelSprite.stage
             .addEventListener(Event.RESIZE, onResize);
         inputHandler = new InputHandler();
     }
@@ -45,6 +45,8 @@ class Rocket extends Sprite {
         bodyDef.angle = 0.0;
         bodyDef.linearVelocity = new B2Vec2(1.0, 1.0); // m/s
         bodyDef.linearDamping = 0.0;
+        bodyDef.bullet = true;
+        bodyDef.fixedRotation = false;
         this.body = world.createBody(bodyDef);
 
         var shape = new B2PolygonShape();
@@ -73,22 +75,24 @@ class Rocket extends Sprite {
     }
 
     function getInputAndApplyForces() {
-        var magnitude = 0.1;
+        var forceMagnitude = 0.1; // in N
+        var torqueMagnitude = 10.0; // in Nm
         var force : B2Vec2 = new B2Vec2(0.0, 0.0);
+        var torque = 0.0; // +z is into the screen
         if (inputHandler.isHeldOrWasDown(Keyboard.UP)) {
-            force.add(new B2Vec2(0.0, -magnitude));
+            force.add(new B2Vec2(0.0, -forceMagnitude));
         }
         if (inputHandler.isHeldOrWasDown(Keyboard.DOWN)) {
-            force.add(new B2Vec2(0.0, magnitude));
+            force.add(new B2Vec2(0.0, forceMagnitude));
         }
         if (inputHandler.isHeldOrWasDown(Keyboard.LEFT)) {
-            force.add(new B2Vec2(-magnitude, 0.0));
+            torque -= torqueMagnitude;
         }
         if (inputHandler.isHeldOrWasDown(Keyboard.RIGHT)) {
-            force.add(new B2Vec2(magnitude, 0.0));
+            torque += torqueMagnitude;
         }
-        trace('force = $force');
         var centerOfMassInWorldCoords = body.getWorldCenter();
+        body.applyTorque(torque);
         body.applyForce(force, centerOfMassInWorldCoords);
     }
 
@@ -99,13 +103,36 @@ class Rocket extends Sprite {
     }
 
     function draw() {
+        var verticesLocalPx = getVerticesLocalPx();
         this.graphics.beginFill(color);
-        Util.drawTriangle(
+        Util.drawTriangleInt(
             this.graphics,
-            new Point(this.widthPx / 2, 0),
-            new Point(this.widthPx, this.heightPx),
-            new Point(0, heightPx)
-        );
+            verticesLocalPx[0],
+            verticesLocalPx[1],
+            verticesLocalPx[2]);
         this.graphics.endFill();
+    }
+
+    function getVerticesLocalPx() : Array<Util.IntPoint> {
+        var shape = cast(this.body.getFixtureList().getShape(), B2PolygonShape);
+        var verticesLocalM = shape.getVertices();
+
+        // get WorldPoint rotates and translates
+        var verticesGlobalM = verticesLocalM.map(body.getWorldPoint);
+
+        // but we only want the rotation, so translate back to local positions
+        var verticesLocalRotatedM = verticesGlobalM.map(
+            function(v : B2Vec2) : B2Vec2 {
+                var pos = body.getPosition();
+                var newX = v.x - pos.x;
+                var newY = v.y - pos.y;
+                return new B2Vec2(newX, newY);
+            });
+
+        var verticesLocalPx = verticesLocalRotatedM.map(
+            function(v : B2Vec2) : Util.IntPoint {
+                return World.metersToPixels(v.x, v.y);
+            });
+        return verticesLocalPx;
     }
 }

@@ -7,9 +7,11 @@ import box2D.common.math.B2Vec2;
 import box2D.collision.shapes.B2PolygonShape;
 
 class TrackEdge extends Sprite {
+    var world : B2World;
+
+    var body : B2Body;
     var physicalShape : B2PolygonShape;
 
-    var parentBody : B2Body;
     var startPoint : B2Vec2;
     var endPoint : B2Vec2;
 
@@ -20,11 +22,11 @@ class TrackEdge extends Sprite {
     public static inline var thicknessPx = 10.0;
 
 	public function new(
-            _parentBody : B2Body,
+            _world : B2World,
             _startPoint : B2Vec2,
             _endPoint : B2Vec2) {
         super();
-        this.parentBody = _parentBody;
+        this.world = _world;
         this.startPoint = _startPoint;
         this.endPoint = _endPoint;
 
@@ -33,9 +35,11 @@ class TrackEdge extends Sprite {
 
         draw();
 
+        var bodyDef = new B2BodyDef();
+        this.body = world.createBody(bodyDef);
         this.physicalShape = new B2PolygonShape();
         this.physicalShape.setAsEdge(this.startPoint, this.endPoint);
-        this.parentBody.createFixture2(this.physicalShape);
+        this.body.createFixture2(this.physicalShape);
     }
 
     function draw() {

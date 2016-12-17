@@ -19,6 +19,9 @@ class World extends B2World {
     public static inline var widthM = 10.0;
     public static inline var heightM = 10.0;
 
+    var debugSprite : Sprite;
+    var debugDraw = true;
+
     public function new() {
         var gravity = new B2Vec2(0.0, 0.0);
         var doSleep = true;
@@ -31,10 +34,27 @@ class World extends B2World {
         this.timeStepMillis = Std.int(timeStepSeconds * 1000);
         this.physicsTimer = new Timer(timeStepMillis);
         physicsTimer.run = this.stepWorld;
+
+        if (debugDraw) {
+            setupDebugDraw();
+        }
+    }
+
+    function setupDebugDraw() {
+        var dbDraw = new B2DebugDraw();
+        dbDraw.appendFlags(B2DebugDraw.e_shapeBit);
+        debugSprite = new Sprite();
+        dbDraw.setSprite(debugSprite);
+        dbDraw.setDrawScale(50.0);
+        this.setDebugDraw(dbDraw);
     }
 
     public function getDisplayObjects() : Array<DisplayObject> {
-        return [cast(rocket, DisplayObject)].concat(track.getDisplayObjects());
+        if (debugDraw) {
+            return [debugSprite];
+        } else {
+            return [cast(rocket, DisplayObject)].concat(track.getDisplayObjects());
+        }
     }
 
     function stepWorld() {
@@ -43,6 +63,7 @@ class World extends B2World {
         var velocityIters = 8;
         var positionIters = 3;
         this.step(this.timeStepSeconds, velocityIters, positionIters);
+        this.drawDebugData();
     }
 
     public static function metersToPixels(

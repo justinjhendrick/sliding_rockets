@@ -9,14 +9,10 @@ import box2D.collision.shapes.B2PolygonShape;
 // a course to race on
 class Track {
     var world : B2World;
-    var parentBody : B2Body;
     var boundaries : Array<TrackEdge>;
 
 	public function new(_world : B2World) {
         this.world = _world;
-
-        var bodyDef = new B2BodyDef();
-        parentBody = world.createBody(bodyDef);
 
         boundaries = new Array<TrackEdge>();
         var topLeft  = new B2Vec2(0.0,          0.0);
@@ -26,10 +22,10 @@ class Track {
         var botLeft  = new B2Vec2(0.0,          World.heightM - thicknessM);
         var botRight = new B2Vec2(World.widthM, World.heightM - thicknessM);
 
-        boundaries.push(new TrackEdge(parentBody, topLeft, topRight));
-        boundaries.push(new TrackEdge(parentBody, topLeft, botLeft));
-        boundaries.push(new TrackEdge(parentBody, botLeft, botRight));
-        boundaries.push(new TrackEdge(parentBody, botRight, topRight));
+        boundaries.push(new TrackEdge(world, topRight, topLeft));
+        boundaries.push(new TrackEdge(world, topLeft, botLeft));
+        boundaries.push(new TrackEdge(world, botLeft, botRight));
+        boundaries.push(new TrackEdge(world, botRight, topRight));
 	}
 
     public function getDisplayObjects() {

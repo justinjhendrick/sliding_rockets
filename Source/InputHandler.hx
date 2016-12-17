@@ -54,19 +54,11 @@ class InputHandler extends InteractiveObject {
     }
 
     function onKeyDown(e : KeyboardEvent) {
-        //debug
-        var k = e.keyCode;
-        trace('$k down');
-
         isDown.put(e.keyCode);
         numberOfUnreadDowns.increment(e.keyCode);
     }
 
     function onKeyUp(e : KeyboardEvent) {
-        //debug
-        var k = e.keyCode;
-        trace('$k up');
-
         isDown.remove(e.keyCode);
     }
 }
