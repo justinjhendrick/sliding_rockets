@@ -39,7 +39,7 @@ class TrackEdge extends Sprite {
         this.body = world.createBody(bodyDef);
         this.physicalShape = new B2PolygonShape();
         this.physicalShape.setAsEdge(this.startPoint, this.endPoint);
-        this.body.createFixture2(this.physicalShape);
+        this.body.createFixture2(this.physicalShape, 1.0);
     }
 
     function draw() {

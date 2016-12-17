@@ -52,11 +52,11 @@ class Rocket extends Sprite {
         var shape = new B2PolygonShape();
         var triangleVertices = new Array();
         triangleVertices.push(new B2Vec2(widthM / 2, 0.0));
-        triangleVertices.push(new B2Vec2(0.0, heightM));
         triangleVertices.push(new B2Vec2(widthM, heightM));
+        triangleVertices.push(new B2Vec2(0.0, heightM));
         shape.setAsVector(triangleVertices);
 
-        this.body.createFixture2(shape);
+        this.body.createFixture2(shape, 1.0);
 	}
 
     function everyFrame(e : Event) {
@@ -76,14 +76,14 @@ class Rocket extends Sprite {
 
     function getInputAndApplyForces() {
         var forceMagnitude = 0.1; // in N
-        var torqueMagnitude = 10.0; // in Nm
+        var torqueMagnitude = 1.0; // in Nm
         var force : B2Vec2 = new B2Vec2(0.0, 0.0);
         var torque = 0.0; // +z is into the screen
-        if (inputHandler.isHeldOrWasDown(Keyboard.UP)) {
-            force.add(new B2Vec2(0.0, -forceMagnitude));
-        }
-        if (inputHandler.isHeldOrWasDown(Keyboard.DOWN)) {
-            force.add(new B2Vec2(0.0, forceMagnitude));
+        if (inputHandler.isHeldOrWasDown(Keyboard.SPACE)) {
+            var angle = this.body.getAngle() - Math.PI / 2;
+            var rocketPrograde = new B2Vec2(Math.cos(angle), Math.sin(angle));
+            rocketPrograde.multiply(forceMagnitude);
+            force.add(rocketPrograde);
         }
         if (inputHandler.isHeldOrWasDown(Keyboard.LEFT)) {
             torque -= torqueMagnitude;
@@ -92,8 +92,13 @@ class Rocket extends Sprite {
             torque += torqueMagnitude;
         }
         var centerOfMassInWorldCoords = body.getWorldCenter();
-        body.applyTorque(torque);
-        body.applyForce(force, centerOfMassInWorldCoords);
+        this.body.m_torque = 0.0; // only apply torque for one frame
+        this.body.applyTorque(torque);
+        this.body.applyImpulse(force, centerOfMassInWorldCoords);
+
+        var m_torque = body.m_torque;
+        var angVel = body.m_angularVelocity;
+        trace('torque = $m_torque, angVel = $angVel');
     }
 
     function onResize(e : Event) {
