@@ -16,8 +16,8 @@ class Rocket extends Sprite {
     var needRedraw = false;
     var color = 0xff0000;
 
-    var widthM = 1.0;
-    var heightM = 2.0;
+    var widthM = 0.5;
+    var heightM = 1.0;
 
     var widthPx : Int;
     var heightPx : Int;
@@ -50,13 +50,26 @@ class Rocket extends Sprite {
         this.body = world.createBody(bodyDef);
 
         var shape = new B2PolygonShape();
-        var triangleVertices = new Array();
-        triangleVertices.push(new B2Vec2(widthM / 2, 0.0));
-        triangleVertices.push(new B2Vec2(widthM, heightM));
-        triangleVertices.push(new B2Vec2(0.0, heightM));
-        shape.setAsVector(triangleVertices);
-
+        var vertices = getTriangleVertices();
+        shape.setAsVector(vertices);
         this.body.createFixture2(shape, 1.0);
+    }
+
+    function getRectangleVertices() : Array<B2Vec2> {
+        var result = new Array<B2Vec2>();
+        result.push(new B2Vec2(0.0, 0.0));
+        result.push(new B2Vec2(widthM, 0.0));
+        result.push(new B2Vec2(widthM, heightM));
+        result.push(new B2Vec2(0.0, heightM));
+        return result;
+	}
+
+    function getTriangleVertices() : Array<B2Vec2> {
+        var result = new Array<B2Vec2>();
+        result.push(new B2Vec2(widthM / 2, 0.0));
+        result.push(new B2Vec2(widthM, heightM));
+        result.push(new B2Vec2(0.0, heightM));
+        return result;
 	}
 
     function everyFrame(e : Event) {
@@ -75,15 +88,15 @@ class Rocket extends Sprite {
     }
 
     function getInputAndApplyForces() {
-        var forceMagnitude = 0.1; // in N
-        var torqueMagnitude = 1.0; // in Nm
-        var force : B2Vec2 = new B2Vec2(0.0, 0.0);
+        var impulseMagnitude = 0.03; // in N*s
+        var torqueMagnitude = 0.1; // in Nm
+        var impulse : B2Vec2 = new B2Vec2(0.0, 0.0);
         var torque = 0.0; // +z is into the screen
         if (inputHandler.isHeldOrWasDown(Keyboard.SPACE)) {
             var angle = this.body.getAngle() - Math.PI / 2;
             var rocketPrograde = new B2Vec2(Math.cos(angle), Math.sin(angle));
-            rocketPrograde.multiply(forceMagnitude);
-            force.add(rocketPrograde);
+            rocketPrograde.multiply(impulseMagnitude);
+            impulse.add(rocketPrograde);
         }
         if (inputHandler.isHeldOrWasDown(Keyboard.LEFT)) {
             torque -= torqueMagnitude;
@@ -94,7 +107,7 @@ class Rocket extends Sprite {
         var centerOfMassInWorldCoords = body.getWorldCenter();
         this.body.m_torque = 0.0; // only apply torque for one frame
         this.body.applyTorque(torque);
-        this.body.applyImpulse(force, centerOfMassInWorldCoords);
+        this.body.applyImpulse(impulse, centerOfMassInWorldCoords);
 
         var m_torque = body.m_torque;
         var angVel = body.m_angularVelocity;

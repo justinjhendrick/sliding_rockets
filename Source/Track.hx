@@ -11,7 +11,7 @@ class Track {
     var world : B2World;
     var boundaries : Array<TrackEdge>;
 
-	public function new(_world : B2World) {
+	public function new(_world : B2World, trackType : TrackType) {
         this.world = _world;
 
         boundaries = new Array<TrackEdge>();
@@ -26,6 +26,24 @@ class Track {
         boundaries.push(new TrackEdge(world, topLeft, botLeft));
         boundaries.push(new TrackEdge(world, botLeft, botRight));
         boundaries.push(new TrackEdge(world, botRight, topRight));
+
+        if (trackType == LOOP) {
+            addInnerBox();
+        }
+    }
+    function addInnerBox() {
+        var raceWayWidth = .3 * World.widthM;
+        var raceWayHeight = .3 * World.heightM;
+        var topLeft  = new B2Vec2(raceWayWidth, raceWayHeight);
+        var topRight = new B2Vec2(World.widthM - raceWayWidth, raceWayHeight);
+        var botLeft  = new B2Vec2(raceWayWidth, World.heightM - raceWayHeight);
+        var botRight = new B2Vec2(World.widthM - raceWayWidth,
+                World.heightM - raceWayHeight);
+
+        boundaries.push(new TrackEdge(world, topRight, topLeft));
+        boundaries.push(new TrackEdge(world, topLeft, botLeft));
+        boundaries.push(new TrackEdge(world, botLeft, botRight));
+        boundaries.push(new TrackEdge(world, botRight, topRight));
 	}
 
     public function getDisplayObjects() {
@@ -35,4 +53,9 @@ class Track {
             }
         );
     }
+}
+
+enum TrackType {
+    BOX;
+    LOOP;
 }

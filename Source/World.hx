@@ -28,7 +28,7 @@ class World extends B2World {
         super(gravity, doSleep);
 
         // create objects in the world
-        this.track = new Track(this);
+        this.track = new Track(this, Track.TrackType.LOOP);
         this.rocket = new Rocket(this);
 
         this.timeStepMillis = Std.int(timeStepSeconds * 1000);
